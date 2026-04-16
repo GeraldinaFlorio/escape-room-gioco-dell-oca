@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diario Digitale - Il Gioco dell'Inclusione</title>
+    <title>Diario Digitale - Gioco dell'Inclusione Numerato</title>
     <style>
         :root {
             --color-1: #FFB7B2;
@@ -16,7 +16,6 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            /* Sfondo prato verde */
             background: radial-gradient(circle, #7cfc00 0%, #228b22 100%);
             min-height: 100vh;
             display: flex;
@@ -43,50 +42,61 @@
             align-items: flex-start;
         }
 
-        /* Griglia per spirale */
         #board {
             display: grid;
-            grid-template-columns: repeat(5, 120px);
-            grid-template-rows: repeat(5, 120px);
-            gap: 10px;
+            grid-template-columns: repeat(5, 130px);
+            grid-template-rows: repeat(5, 130px);
+            gap: 12px;
             background: rgba(255, 255, 255, 0.3);
             padding: 20px;
-            border-radius: 20px;
+            border-radius: 25px;
             backdrop-filter: blur(5px);
             box-shadow: 0 15px 35px rgba(0,0,0,0.2);
         }
 
         .cell {
-            border-radius: 12px;
+            border-radius: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             text-align: center;
-            padding: 8px;
+            padding: 10px;
             position: relative;
             background-color: rgba(255, 255, 255, 0.9);
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-            transition: transform 0.2s;
             border: 2px solid white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        .cell b { font-size: 0.8rem; display: block; margin-bottom: 4px; color: #2c3e50; }
-        .cell i { font-size: 0.65rem; color: #666; display: block; margin-top: 4px; border-top: 1px solid #eee; padding-top: 4px; }
+        /* Numerazione della casella */
+        .cell-number {
+            position: absolute;
+            top: 5px;
+            left: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #2c3e50;
+            background: rgba(0,0,0,0.05);
+            padding: 2px 6px;
+            border-radius: 50%;
+        }
 
-        .cell-0 { background-color: var(--color-3) !important; font-weight: bold; border: 3px solid #4CAF50; }
+        .cell b { font-size: 0.85rem; display: block; margin-top: 10px; margin-bottom: 5px; color: #2c3e50; }
+        .cell i { font-size: 0.7rem; color: #555; display: block; margin-top: auto; border-top: 1px solid #ddd; padding-top: 5px; }
+
+        .cell-0 { background-color: var(--color-3) !important; border: 3px solid #4CAF50; }
+        .cell-final { background-color: var(--color-5) !important; border: 3px solid #673AB7; }
         .cell-special { background-color: var(--color-2) !important; }
-        .cell-final { background-color: var(--color-5) !important; font-weight: bold; border: 3px solid #673AB7; }
 
         .player {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             border: 2px solid white;
             position: absolute;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
             z-index: 10;
         }
 
@@ -95,7 +105,7 @@
             padding: 25px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 280px;
+            width: 300px;
             text-align: center;
         }
 
@@ -112,75 +122,66 @@
             transition: all 0.2s;
         }
 
-        button:hover { background-color: #ee5253; transform: translateY(-2px); }
-        button:active { transform: translateY(0); }
+        button:hover { background-color: #ee5253; transform: scale(1.05); }
 
         #dice-result { font-size: 4rem; margin: 15px 0; }
         #timer, #turn-info {
             font-size: 1.1rem;
             margin-bottom: 15px;
-            padding: 10px;
+            padding: 12px;
             background: #f8f9fa;
             border-radius: 12px;
             border: 1px solid #eee;
         }
 
-        .p1 { background-color: #ff6b6b; left: 10%; top: 10%; }
-        .p2 { background-color: #4ecdc4; right: 10%; top: 10%; }
-        .p3 { background-color: #feca57; left: 10%; bottom: 10%; }
-        .p4 { background-color: #54a0ff; right: 10%; bottom: 10%; }
+        .p1 { background-color: #ff6b6b; left: 15%; top: 15%; }
+        .p2 { background-color: #4ecdc4; right: 15%; top: 15%; }
+        .p3 { background-color: #feca57; left: 15%; bottom: 15%; }
+        .p4 { background-color: #54a0ff; right: 15%; bottom: 15%; }
     </style>
 </head>
 <body>
 
-    <h1>Diario Digitale: Il Gioco dell'Inclusione</h1>
+    <h1>Diario Digitale: Il Gioco dell'Oca Numerato</h1>
     
     <div id="game-container">
-        <div id="board">
-            </div>
+        <div id="board"></div>
 
         <div id="controls">
             <div id="timer">⏱️ Tempo: 00:00</div>
-            <div id="turn-info">Tocca al Compagno Tutor 1</div>
+            <div id="turn-info">Tocca al Giocatore 1</div>
             <div id="dice-result">🎲</div>
             <button onclick="rollDice()">TIRA IL DADO</button>
-            <div id="message" style="margin-top:20px; font-weight: 500; color: #2e7d32;"></div>
+            <div id="message" style="margin-top:20px; font-weight: 500; color: #2e7d32; min-height: 40px;"></div>
         </div>
     </div>
 
     <script>
-        // Mappa dei contenuti: Titolo + Attività suggerita
         const spiralContent = [
-            { t: "Partenza", a: "Lunedì: Inizio della rotazione settimanale." },
-            { t: "Inquadramento", a: "Analizza la mappa dei principi pedagogici." },
-            { t: "Pausa Regolativa", a: "Percorri il corridoio per la regolazione emotiva." },
-            { t: "Saluto Sociale", a: "Saluta tre persone incontrate nel corridoio." },
-            { t: "Adesione Docenti", a: "Pianifica l'intervento con i docenti curricolari." },
-            { t: "Contenuti Interattivi", a: "Esplora l'immagine interattiva dei rinforzi." },
-            { t: "Supporto Audio", a: "Ascolta le istruzioni vocali per la compilazione." },
+            { t: "Partenza", a: "Inizio rotazione settimanale (Lunedì)." },
+            { t: "Inquadramento", a: "Analisi pedagogica del contesto classe." },
+            { t: "Pausa Regolativa", a: "Passeggiata in corridoio per relax." },
+            { t: "Saluto Sociale", a: "Interazione minima con compagni/personale." },
+            { t: "Adesione Docenti", a: "Coordinamento con docente di Italiano." },
+            { t: "Contenuti Interattivi", a: "Studio delle strategie di rinforzo." },
+            { t: "Supporto Audio", a: "Ascolto istruzioni compilazione diario." },
             { t: "Attività Motoria", a: "Raggiungi il compagno in palestra." },
-            { t: "Monitoraggio Tempo", a: "Attiva il timer: l'obiettivo è restare 10 min." },
-            { t: "Mappa Mentale", a: "Visualizza i nodi dell'analisi del gruppo classe." },
-            { t: "Gestione Crisi", a: "Applica le strategie di de-escalation apprese." },
-            { t: "Diario Operativo", a: "Registra l'attività svolta nella sezione dedicata." },
-            { t: "Supporto Video", a: "Guarda il tutorial sui processi cognitivi." },
-            { t: "Narrazione Immagini", a: "Crea un breve fumetto dell'interazione odierna." },
-            { t: "Spazio Esterno", a: "Svolgi l'attività di interazione in cortile." },
-            { t: "Auto-osservazione", a: "Cerca di capire come ti sei sentito oggi." },
-            { t: "Bacheca Feedback", a: "Inserisci una proposta migliorativa per il progetto." },
-            { t: "Analisi Dati", a: "Confronta i minuti di permanenza con i dati Excel." },
-            { t: "Sintesi Risultati", a: "Genera un grafico del benessere emotivo." },
-            { t: "Inclusione Realizzata", a: "Traguardo: Analisi qualitativa completata!" }
+            { t: "Monitoraggio Tempo", a: "Uso del timer per sessione di 10 min." },
+            { t: "Mappa Mentale", a: "Visualizzazione struttura dell'inclusione." },
+            { t: "Gestione Crisi", a: "Supporto durante crisi comportamentali." },
+            { t: "Diario Operativo", a: "Registrazione attività e luoghi svolti." },
+            { t: "Supporto Video", a: "Studio dei processi cognitivi linearizzati." },
+            { t: "Narrazione Immagini", a: "Creazione di un fumetto dell'attività." },
+            { t: "Spazio Esterno", a: "Interazione sociale in cortile." },
+            { t: "Auto-osservazione", a: "Riflessione sulle emozioni provate." },
+            { t: "Bacheca Feedback", a: "Condivisione apprendimenti sociali." },
+            { t: "Analisi Quantitativa", a: "Verifica tempi di permanenza su Excel." },
+            { t: "Sintesi Risultati", a: "Analisi dati finali del benessere." },
+            { t: "Traguardo", a: "Inclusione Realizzata con Successo!" }
         ];
 
-        // Coordinate per mappare una spirale 5x5 (indici della griglia 0-24)
-        const spiralPath = [
-            0, 1, 2, 3, 4,
-            9, 14, 19, 24, 23,
-            22, 21, 20, 15, 10,
-            5, 6, 7, 8, 13,
-            18, 17, 12, 11, 16
-        ];
+        // Percorso a spirale 5x5
+        const spiralPath = [0, 1, 2, 3, 4, 9, 14, 19, 24, 23, 22, 21, 20, 15, 10, 5, 6, 7, 8, 13, 18, 17, 12, 11, 16];
 
         let playerPositions = [0, 0, 0, 0];
         let currentPlayer = 0;
@@ -188,35 +189,32 @@
         let seconds = 0;
         let timerInterval;
 
-        // Inizializzazione board
         const board = document.getElementById('board');
         const cellsArray = new Array(25).fill(null);
 
-        // Prepariamo le celle nella posizione corretta della spirale
         spiralContent.forEach((data, i) => {
             const gridIndex = spiralPath[i];
             const cell = document.createElement('div');
             cell.className = `cell cell-${i}`;
             if(i === 0) cell.classList.add('cell-0');
             if(i === 19) cell.classList.add('cell-final');
-            if([5, 8, 11, 14, 17].includes(i)) cell.classList.add('cell-special');
+            if([4, 8, 12, 16].includes(i)) cell.classList.add('cell-special');
             
-            cell.innerHTML = `<b>${data.t}</b><i>${data.a}</i>`;
+            // Aggiunta del numero della casella
+            cell.innerHTML = `
+                <div class="cell-number">${i + 1}</div>
+                <b>${data.t}</b>
+                <i>${data.a}</i>
+            `;
             cell.id = `cell-${i}`;
             cellsArray[gridIndex] = cell;
         });
 
-        // Riempiamo la griglia HTML rispettando l'ordine CSS Grid
         for(let i=0; i<25; i++) {
-            if(cellsArray[i]) {
-                board.appendChild(cellsArray[i]);
-            } else {
-                const empty = document.createElement('div');
-                board.appendChild(empty); // Spazi vuoti per la spirale incompleta
-            }
+            if(cellsArray[i]) board.appendChild(cellsArray[i]);
+            else board.appendChild(document.createElement('div'));
         }
 
-        // Posizionamento iniziale pedine
         const players = ['p1', 'p2', 'p3', 'p4'];
         players.forEach((p, idx) => {
             const dot = document.createElement('div');
@@ -235,18 +233,10 @@
         }
 
         function rollDice() {
-            if (!timerStarted) {
-                startTimer();
-                timerStarted = true;
-            }
-
+            if (!timerStarted) { startTimer(); timerStarted = true; }
             const roll = Math.floor(Math.random() * 6) + 1;
-            document.getElementById('dice-result').innerText = getDiceEmoji(roll);
+            document.getElementById('dice-result').innerText = ['🎲', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][roll];
             movePlayer(currentPlayer, roll);
-        }
-
-        function getDiceEmoji(n) {
-            return ['🎲', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][n];
         }
 
         function movePlayer(playerIdx, steps) {
@@ -258,27 +248,24 @@
                 playerPositions[playerIdx] = newPos;
                 updatePawn(playerIdx, newPos);
                 setTimeout(() => {
-                    alert(`Complimenti Giocatore ${playerIdx + 1}! Hai completato il percorso di Inclusione in ${document.getElementById('timer').innerText}`);
+                    alert(`VITTORIA! Il Giocatore ${playerIdx + 1} ha raggiunto l'Inclusione!`);
                     clearInterval(timerInterval);
-                }, 500);
+                }, 400);
                 return;
             }
 
             playerPositions[playerIdx] = newPos;
             updatePawn(playerIdx, newPos);
-
-            const msg = document.getElementById('message');
-            msg.innerText = `Attività: ${spiralContent[newPos].a}`;
+            document.getElementById('message').innerText = `Attività Casella ${newPos+1}: ${spiralContent[newPos].a}`;
 
             currentPlayer = (currentPlayer + 1) % 4;
             document.getElementById('turn-info').innerText = `Tocca al Giocatore ${currentPlayer + 1}`;
-            document.getElementById('turn-info').style.backgroundColor = ['#ffb2b2','#b2f2ef','#fef0b2','#b2d1fe'][currentPlayer];
+            document.getElementById('turn-info').style.borderBottom = `4px solid ${['#ff6b6b','#4ecdc4','#feca57','#54a0ff'][currentPlayer]}`;
         }
 
         function updatePawn(playerIdx, pos) {
             const playerElement = document.getElementById(`player-${playerIdx}`);
-            const targetCell = document.getElementById(`cell-${pos}`);
-            targetCell.appendChild(playerElement);
+            document.getElementById(`cell-${pos}`).appendChild(playerElement);
         }
     </script>
 </body>
