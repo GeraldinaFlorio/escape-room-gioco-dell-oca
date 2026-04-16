@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Il Diario Digitale - Il Gioco dell'Inclusione</title>
+    <style>
+        :root {
+            --color-1: #FFB7B2; /* Rosa pastello */
+            --color-2: #FFDAC1; /* Arancio pastello */
+            --color-3: #E2F0CB; /* Verde pastello */
+            --color-4: #B5EAD7; /* Menta pastello */
+            --color-5: #C7CEEA; /* Lavanda pastello */
+            --text-color: #555;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fdfbfb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 { color: #8892b0; }
+
+        #game-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(5, 100px);
+            grid-template-rows: repeat(5, 100px);
+            gap: 10px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .cell {
+            border: 2px solid #eee;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 5px;
+            position: relative;
+            background-color: white;
+        }
+
+        .cell-0 { background-color: var(--color-3); font-weight: bold; }
+        .cell-special { background-color: var(--color-2); }
+        .cell-final { background-color: var(--color-5); font-weight: bold; }
+
+        .player {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid white;
+            position: absolute;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        #controls {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 300px;
+            text-align: center;
+        }
+
+        button {
+            background-color: var(--color-4);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            color: #444;
+            font-weight: bold;
+            transition: transform 0.1s;
+        }
+
+        button:active { transform: scale(0.95); }
+
+        #dice-result {
+            font-size: 3rem;
+            margin: 20px 0;
+        }
+
+        #timer, #turn-info {
+            font-size: 1.2rem;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .p1 { background-color: #ff6b6b; left: 5px; top: 5px; }
+        .p2 { background-color: #4ecdc4; right: 5px; top: 5px; }
+        .p3 { background-color: #ffe66d; left: 5px; bottom: 5px; }
+        .p4 { background-color: #1a535c; right: 5px; bottom: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1>Diario Digitale: Il Gioco dell'Oca</h1>
+    
+    <div id="game-container">
+        <div id="board">
+            </div>
+
+        <div id="controls">
+            <div id="timer">Tempo: 00:00</div>
+            <div id="turn-info">Tocca al Giocatore 1</div>
+            <div id="dice-result">🎲</div>
+            <button onclick="rollDice()">TIRA IL DADO</button>
+            <div id="message" style="margin-top:20px; font-style: italic; font-size: 0.9rem;"></div>
+        </div>
+    </div>
+
+    <script>
+        const cellsData = [
+            "Partenza (Lunedì)", "Incontro in Aula", "Adesione Collegio Docenti", "Pausa in Corridoio", "Saluto ai compagni",
+            "Uso di Genially", "Mappa Mentale", "Video Didattico", "Attività in Palestra", "Uso del Timer",
+            "Notebook LM Audio", "Regolazione Emotiva", "Crisi superata!", "Foto per Book Creator", "Interazione Sociale",
+            "Creazione Fumetto", "Feedback su Padlet", "Analisi Excel", "Data Analysis", "Traguardo: Inclusione Realizzata!"
+        ];
+
+        let playerPositions = [0, 0, 0, 0];
+        let currentPlayer = 0;
+        let timerStarted = false;
+        let seconds = 0;
+        let timerInterval;
+
+        // Inizializzazione board
+        const board = document.getElementById('board');
+        for (let i = 0; i < 20; i++) {
+            const cell = document.createElement('div');
+            cell.className = `cell cell-${i}`;
+            if(i === 0) cell.classList.add('cell-0');
+            if(i === 19) cell.classList.add('cell-final');
+            if([2, 5, 10, 13, 16].includes(i)) cell.classList.add('cell-special');
+            
+            cell.innerHTML = `<small>${i}</small><br>${cellsData[i]}`;
+            cell.id = `cell-${i}`;
+            board.appendChild(cell);
+        }
+
+        // Posizionamento iniziale pedine
+        const players = ['p1', 'p2', 'p3', 'p4'];
+        players.forEach((p, idx) => {
+            const dot = document.createElement('div');
+            dot.className = `player ${p}`;
+            dot.id = `player-${idx}`;
+            document.getElementById('cell-0').appendChild(dot);
+        });
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                seconds++;
+                let min = Math.floor(seconds / 60).toString().padStart(2, '0');
+                let sec = (seconds % 60).toString().padStart(2, '0');
+                document.getElementById('timer').innerText = `Tempo: ${min}:${sec}`;
+            }, 1000);
+        }
+
+        function rollDice() {
+            if (!timerStarted) {
+                startTimer();
+                timerStarted = true;
+            }
+
+            const roll = Math.floor(Math.random() * 6) + 1;
+            document.getElementById('dice-result').innerText = getDiceEmoji(roll);
+            
+            movePlayer(currentPlayer, roll);
+        }
+
+        function getDiceEmoji(n) {
+            return ['🎲', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'][n];
+        }
+
+        function movePlayer(playerIdx, steps) {
+            let oldPos = playerPositions[playerIdx];
+            let newPos = oldPos + steps;
+
+            if (newPos >= 19) {
+                newPos = 19;
+                alert(`Il Giocatore ${playerIdx + 1} ha raggiunto l'obiettivo dell'Inclusione!`);
+                clearInterval(timerInterval);
+            }
+
+            playerPositions[playerIdx] = newPos;
+            
+            const playerElement = document.getElementById(`player-${playerIdx}`);
+            document.getElementById(`cell-${newPos}`).appendChild(playerElement);
+
+            // Messaggi basati sul contenuto del file
+            const msg = document.getElementById('message');
+            if(newPos === 3 || newPos === 11) msg.innerText = "Spazio di transizione (corridoio): focus sulla regolazione emotiva.";
+            else if(newPos === 13) msg.innerText = "Caricamento dati su Book Creator in corso...";
+            else if(newPos === 16) msg.innerText = "Condivisione emozioni su Padlet.";
+            else msg.innerText = "";
+
+            // Cambio turno
+            currentPlayer = (currentPlayer + 1) % 4;
+            document.getElementById('turn-info').innerText = `Tocca al Giocatore ${currentPlayer + 1}`;
+            document.getElementById('turn-info').style.borderBottom = `5px solid ${['#ff6b6b','#4ecdc4','#ffe66d','#1a535c'][currentPlayer]}`;
+        }
+    </script>
+</body>
+</html>
